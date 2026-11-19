@@ -25,11 +25,14 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
-      - name: Prepare static site
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Test and build versioned release
         run: |
-          mkdir -p dist
-          cp index.html app.js catalog.js styles.css sw.js manifest.webmanifest icon.svg dist/
-          cp -R icons assets dist/
+          npm test
+          npm run build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

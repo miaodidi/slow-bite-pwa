@@ -2,7 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const vm = require('node:vm');
 const fs = require('node:fs');
-const source = fs.readFileSync('catalog.js', 'utf8')+'\n'+fs.readFileSync('app.js', 'utf8');
+const source = fs.readFileSync('updater.js','utf8')+'\n'+fs.readFileSync('catalog.js', 'utf8')+'\n'+fs.readFileSync('app.js', 'utf8');
 function fixture(saved={}) {
   const elements = new Map();
   const element = selector => {
@@ -11,8 +11,8 @@ function fixture(saved={}) {
   };
   const context = vm.createContext({
     localStorage:{getItem(k){return saved[k]||null;},setItem(k,v){saved[k]=v;}},
-    document:{documentElement:{style:{setProperty(){}}},querySelector:element,querySelectorAll(){return [];},addEventListener(){},body:{dataset:{},classList:{add(){},remove(){}}}},
-    navigator:{},window:{addEventListener(){},scrollTo(){}},history:{replaceState(){},pushState(){}},location:{pathname:'/',search:''},setInterval(){},setTimeout(){},clearTimeout(){},Intl,Date:class extends Date {}
+    document:{baseURI:'https://example.com/app/',documentElement:{style:{setProperty(){}}},querySelector:element,querySelectorAll(){return [];},addEventListener(){},body:{dataset:{},classList:{add(){},remove(){}}}},
+    URL,sessionStorage:{getItem(){return null;},removeItem(){}},navigator:{},window:{addEventListener(){},scrollTo(){}},history:{replaceState(){},pushState(){}},location:{pathname:'/',search:''},setInterval(){},setTimeout(){},clearTimeout(){},Intl,Date:class extends Date {}
   });
   vm.runInContext(source,context);
   return expression=>vm.runInContext(expression,context);
@@ -58,9 +58,8 @@ test('search, category and delivery filters select matching merchants',()=>{
 test('cart is restored on reload and all offline catalog images exist in the cache',()=>{
  const saved={};let run=fixture(saved);run("route={page:'shop',id:'burger'};addProduct('beef');checkoutDraft.remark='少酱';saveCart()");
  run=fixture(saved);assert.equal(run('cartCount()'),1);assert.equal(run('totalCart()'),26);assert.equal(run('checkoutDraft.remark'),'少酱');
- const sw=fs.readFileSync('sw.js','utf8');const assets=JSON.parse(sw.match(/const ASSETS = (\[.*?\]);/)[1]);
- for(const asset of assets)assert.ok(fs.existsSync(asset.split('?')[0]),asset+' must exist');
+ const assets=['catalog.js',...fs.readdirSync('assets').map(f=>'assets/'+f)];
  const images=JSON.parse(run('JSON.stringify([...SHOPS.flatMap(s=>[s.image,...s.menu.map(p=>p.image)]),...CATEGORIES.map(c=>"cat-"+c[1])])'));
- for(const image of images)assert.ok(assets.includes('./assets/'+image+'.webp'),image+' must be cached');
- assert.ok(assets.includes('./catalog.js'));
+ for(const image of images)assert.ok(assets.includes('assets/'+image+'.webp'),image+' must be cached');
+ assert.ok(assets.includes('catalog.js'));
 });

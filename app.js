@@ -13,7 +13,7 @@ const paths = {
   bell:'M5 17h14l-2-4V8a5 5 0 0 0-10 0v5l-2 4 M9 21h6', speaker:'M3 9h4l6-5v16l-6-5H3V9 M17 8q4 4 0 8 M20 5q6 7 0 14',
   filter:'M4 5h16 M7 12h10 M10 19h4', check:'m5 12 5 5L20 7', heart:'M12 21S1 14 2 7s8-6 10-1c2-5 11-6 10 1s-10 14-10 14',
   phone:'M5 2 2 6q3 12 16 16l4-4-5-5-3 3q-5-2-6-6l3-3-6-5', settings:'M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8 M12 1v3 M12 20v3 M1 12h3 M20 12h3 M4 4l2 2 M18 18l2 2 M4 20l2-2 M18 6l2-2',
-  wallet:'M3 5h18v16H3V5l15-3v3 M21 11h-7v5h7 M17 13.5h.01', home:'m2 10 10-8 10 8 M5 9v13h14V9 M10 22v-8h4v8'
+  wallet:'M3 5h18v16H3V5l15-3v3 M21 11h-7v5h7 M17 13.5h.01', refresh:'M20 7a9 9 0 0 0-15-2L2 8 M2 2v6h6 M4 17a9 9 0 0 0 15 2l3-3 M22 22v-6h-6', home:'m2 10 10-8 10 8 M5 9v13h14V9 M10 22v-8h4v8'
 };
 function icon(name, cls = '') { return `<svg class="icon ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${paths[name] || paths.order}"/></svg>`; }
 function read(key, fallback) { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } }
@@ -36,6 +36,30 @@ let couponBanner = true;
 let lastOrderState = '';
 let lastListStates='';
 let toastTimer;
+const updater = new AppUpdater({
+  current: APP_RELEASE,
+  baseURL: new URL('./', document.baseURI).href,
+  onChange: () => renderUpdateCard(),
+  beforeReload: latest => {
+    // Preserve the current local data before any worker activation or page reload.
+    if (!save()) throw new Error('本地记录保存失败，暂未更新');
+    localStorage.setItem('slowbite.cart.v1',JSON.stringify({shopId:cartShop,items:cart}));
+    localStorage.setItem('slowbite.checkout.v1',JSON.stringify(checkoutDraft));
+    sessionStorage.setItem('slowbite.update.v1',JSON.stringify({target:latest.id}));
+  }
+});
+function releaseLabel(release) { return `v${esc(release.version)} · ${esc(release.build)}`; }
+function updateCard() {
+  const {phase,latest,checkedAt,error,step}=updater.state;
+  const busy=phase==='checking'||phase==='updating';
+  const available=latest&&latest.id!==APP_RELEASE.id;
+  const titles={idle:'版本更新',checking:'正在检查更新',current:'已是最新版本',available:'发现新版本',updating:'正在更新',error:'暂时未能更新'};
+  const message=phase==='updating'?esc(step):phase==='error'?esc(error):available?`最新版 ${releaseLabel(latest)}`:checkedAt?`上次检查 ${time(checkedAt)}，进入本页会自动检查`:'进入本页自动检查，也可以手动同步';
+  return `<div class="update-card-head"><span class="update-mark ${busy?'is-checking':''}">${icon('refresh')}</span><div><h3>${titles[phase]}</h3><p>当前版本 <b>${releaseLabel(APP_RELEASE)}</b></p></div>${available?'<span class="new-version-dot">NEW</span>':''}</div><p class="update-status ${phase==='error'?'update-error':''}" role="status">${message}</p><div class="update-buttons"><button class="${available?'yellow-button':'outline-button'}" data-action="${available?'apply-update':'check-update'}" ${busy?'disabled':''}>${phase==='updating'?'正在下载…':phase==='checking'?'检查中…':available?'更新到最新版':'检查更新'}</button>${!available?`<button class="text-button" data-action="apply-update" ${busy?'disabled':''}>同步刷新</button>`:`<button class="text-button" data-action="check-update" ${busy?'disabled':''}>重新检查</button>`}</div><small class="update-preserve">更新保留订单、地址、购物车和收款设置</small>`;
+}
+function renderUpdateCard() { const card=$('#app-update-card');if(card&&route.page==='mine')card.innerHTML=updateCard(); }
+function enterMine() { if(route.page==='mine')updater.check(); }
+
 function save() { try { localStorage.setItem(STORAGE.orders,JSON.stringify(orders));localStorage.setItem(STORAGE.settings,JSON.stringify(settings));return true; } catch {toast('存储空间不足，请导出记录或换一张较小的收款码');return false;} }
 function toast(text) { $('#toast').textContent=text;$('#toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),2400); }
 function openModal(html) { $('#modal').innerHTML=html;$('#modal-backdrop').hidden=false;document.body.classList.add('modal-open'); }
@@ -45,7 +69,7 @@ function time(t) { return new Intl.DateTimeFormat('zh-CN',{hour:'2-digit',minute
 function date(t) { return new Intl.DateTimeFormat('zh-CN',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(new Date(t)); }
 function getShop(id=route.id) { return SHOPS.find(s=>s.id===id); }
 function saveCart(){try{localStorage.setItem('slowbite.cart.v1',JSON.stringify({shopId:cartShop,items:cart}));localStorage.setItem('slowbite.checkout.v1',JSON.stringify(checkoutDraft));}catch{}}
-function go(page, extra={}) { saveCart();closeModal();route={page,...extra};history.pushState(route,'','#'+page+(extra.id?'/'+extra.id:''));window.scrollTo(0,0);render(); }
+function go(page, extra={}) { saveCart();closeModal();route={page,...extra};history.pushState(route,'','#'+page+(extra.id?'/'+extra.id:''));window.scrollTo(0,0);render();enterMine(); }
 function back() { if (route.page==='checkout') go('shop',{id:cartShop});else if(route.page==='detail')go('orders');else go('home'); }
 function topbar(title, action='back', right='') { return `<header class="page-header"><button class="icon-button" data-action="${action}" aria-label="返回">${icon('back')}</button><h1>${title}</h1>${right||'<span class="header-spacer"></span>'}</header>`; }
 function renderNav() {
@@ -141,7 +165,7 @@ function renderDetail(){const o=orders.find(o=>o.id===route.id);if(!o)return `${
 function timeline(id){const o=orders.find(o=>o.id===id);if(!o)return;const index=statusFor(o);openModal(`${modalHead('订单进度')}<div class="timeline">${STATUS.map((s,i)=>`<div class="${i<=index?'done':''}"><i>${i<=index?'✓':'·'}</i><span><b>${s.label}</b><small>${i<=index?time(o.createdAt+i*o.cooldown*60000/5):'等待中'}</small></span></div>`).join('')}</div>`);}
 function renderCoupons(){return `<header class="coupon-page-header"><h1>我的神券</h1><p>好吃不贵，每一餐都实惠</p><div><strong>13<small>元</small></strong><span>专享神券<br><b>吃点好的，犒劳自己</b></span></div></header><section class="coupon-page-list"><h2>为你精选</h2>${couponCard('welcome',13,32,'外卖专享神券','全部店铺可用')}${couponCard('drink',5,20,'下午茶神券','已展示饮品店可用')}<p class="muted centered">神券用于本应用内订单抵扣</p></section>`;}
 function couponCard(id,amount,min,title,sub){const claimed=settings.coupons.includes(id);return `<div class="coupon-card"><div><strong><small>¥</small>${amount}</strong><span>满${min}元可用</span></div><section><h3>${title}</h3><p>${sub}</p><small>领取后可使用</small></section><button data-action="claim-coupon" data-id="${id}">${claimed?'去使用':'立即领取'}</button></div>`;}
-function renderMine(){const ended=orders.filter(o=>o.dismissed||o.archived);return `<header class="mine-header"><div class="mine-title"><h1>我的</h1><button class="icon-button" data-action="settings" aria-label="设置">${icon('settings')}</button></div><div class="profile"><div class="profile-avatar">${icon('user')}</div><div><h2>今晚吃点什么</h2><p>每一份满足，都刚刚好</p></div><button data-action="address">管理地址 ${icon('chevron')}</button></div></header><section class="mine-stats"><button data-action="nav" data-page="coupons"><strong>${settings.coupons.length}</strong><span>红包神券</span></button><button data-action="nav" data-page="orders"><strong>${orders.length}</strong><span>我的订单</span></button><button data-action="stats"><strong>${money(ended.reduce((n,o)=>n+o.total,0))}</strong><span>已结束订单金额</span></button></section><section class="mine-services"><h3>我的服务</h3>${[['address','pin','收货地址','管理常用地址'],['wallet','wallet','支付设置',settings.reserveMode==='manual'?'微信手动转账':'余额支付'],['settings','clock','订单体验',settings.cooldown+'分钟送达'],['export','order','导出订单记录','保存到本地'],['about','user','关于慢点外卖','个人自用']].map(([a,i,t,sub])=>`<button data-action="${a}">${icon(i)}<b>${t}</b><span>${sub}</span>${icon('chevron')}</button>`).join('')}</section><section class="about-note"><b>给馋意一点缓冲时间</b><p>这是你的私人外卖模拟器。店铺与商品用于浏览体验，接单、备餐、配送和余额均为模拟，不会向真实商家下单。选择微信转账时，资金操作由你在微信中完成。</p><small>订单、地址、收款码只保存在当前设备</small></section>`;}
+function renderMine(){const ended=orders.filter(o=>o.dismissed||o.archived);return `<header class="mine-header"><div class="mine-title"><h1>我的</h1><button class="icon-button" data-action="settings" aria-label="设置">${icon('settings')}</button></div><div class="profile"><div class="profile-avatar">${icon('user')}</div><div><h2>今晚吃点什么</h2><p>每一份满足，都刚刚好</p></div><button data-action="address">管理地址 ${icon('chevron')}</button></div></header><section class="mine-stats"><button data-action="nav" data-page="coupons"><strong>${settings.coupons.length}</strong><span>红包神券</span></button><button data-action="nav" data-page="orders"><strong>${orders.length}</strong><span>我的订单</span></button><button data-action="stats"><strong>${money(ended.reduce((n,o)=>n+o.total,0))}</strong><span>已结束订单金额</span></button></section><section id="app-update-card" class="app-update-card">${updateCard()}</section><section class="mine-services"><h3>我的服务</h3>${[['address','pin','收货地址','管理常用地址'],['wallet','wallet','支付设置',settings.reserveMode==='manual'?'微信手动转账':'余额支付'],['settings','clock','订单体验',settings.cooldown+'分钟送达'],['export','order','导出订单记录','保存到本地'],['about','user','关于慢点外卖','个人自用']].map(([a,i,t,sub])=>`<button data-action="${a}">${icon(i)}<b>${t}</b><span>${sub}</span>${icon('chevron')}</button>`).join('')}</section><section class="about-note"><b>给馋意一点缓冲时间</b><p>这是你的私人外卖模拟器。店铺与商品用于浏览体验，接单、备餐、配送和余额均为模拟，不会向真实商家下单。选择微信转账时，资金操作由你在微信中完成。</p><small>订单、地址、收款码只保存在当前设备</small></section>`;}
 function addressModal(){openModal(`${modalHead('收货地址')}<form id="address-form" class="form"><label>地址<input name="address" value="${esc(settings.address)}" placeholder="小区 / 写字楼名称" required maxlength="60"></label><label>门牌号<input name="room" value="${esc(settings.room)}" placeholder="楼栋、楼层、房间" maxlength="60"></label><label>联系人<input name="recipient" value="${esc(settings.recipient)}" placeholder="称呼" required maxlength="30"></label><label>手机号<input name="phone" value="${esc(settings.phone)}" inputmode="tel" placeholder="选填，仅保存在本机" maxlength="20"></label><button class="yellow-button full" type="submit">保存地址</button></form>`);}
 function wallet(){openModal(`${modalHead('支付设置')}<div class="form"><label class="radio-row"><input type="radio" name="reserveMode" value="virtual" ${settings.reserveMode==='virtual'?'checked':''}><span><b>余额支付</b><small>虚拟余额，只记账，不扣钱</small></span></label><label class="radio-row"><input type="radio" name="reserveMode" value="manual" ${settings.reserveMode==='manual'?'checked':''}><span><b>微信手动转账</b><small>你在微信中付款，本应用无法核验到账</small></span></label><label>收款人备注<input id="contact-name" value="${esc(settings.contactName)}" placeholder="例如：家人 / 朋友" maxlength="40"></label><label>微信号或备注<input id="contact-note" value="${esc(settings.contactNote)}" placeholder="选填，仅保存在本机" maxlength="100"></label><label>微信收款码<input id="qr-file" type="file" accept="image/png,image/jpeg,image/webp"></label>${settings.qr?`<img class="qr-preview" src="${settings.qr}" alt="收款码"><button class="text-button" data-action="remove-qr">移除收款码</button>`:''}<button class="yellow-button full" data-action="save-wallet">保存设置</button></div>`);}
 function captureWallet(){settings.reserveMode=document.querySelector('input[name="reserveMode"]:checked')?.value||settings.reserveMode;settings.contactName=$('#contact-name')?.value.trim()||'';settings.contactNote=$('#contact-note')?.value.trim()||'';}
@@ -152,6 +176,8 @@ function endOrder(id,archive=false){const o=orders.find(o=>o.id===id);if(!o)retu
 function doQuery(q){filters.query=q.trim();filters.category='全部';go('list');}
 function handleAction(a,d){
  if(a==='nav')go(d.page);
+ else if(a==='check-update')updater.check();
+ else if(a==='apply-update')updater.apply();
  else if(a==='back')back();
  else if(a==='home-top'){filters={category:'全部',query:'',sort:'推荐排序',fast:false,deal:false,brand:false};go('home');}
  else if(a==='search'){go('search');setTimeout(()=>$('#search-input')?.focus(),100);}
@@ -220,8 +246,16 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();if((e.k
 document.addEventListener('submit',e=>{e.preventDefault();const form=new FormData(e.target);if(e.target.id==='search-form')doQuery(String(form.get('query')||''));if(e.target.id==='address-form'){const before={...settings};for(const key of ['address','room','recipient','phone'])settings[key]=String(form.get(key)||'').trim();if(save()){closeModal();render();}else settings=before;}if(e.target.id==='remark-form'){checkoutDraft.remark=String(form.get('remark')||'').trim();closeModal();render();}});
 document.addEventListener('input',e=>{if(e.target.id==='duration')$('#duration-value').textContent=e.target.value;});
 document.addEventListener('change',e=>{if(e.target.id!=='qr-file'||!e.target.files?.[0])return;const file=e.target.files[0];if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>12*1024*1024)return toast('请选择12MB以内的PNG、JPEG或WebP图片');captureWallet();const url=URL.createObjectURL(file);const picture=new Image();picture.onload=()=>{const scale=Math.min(1,1200/Math.max(picture.width,picture.height));const canvas=document.createElement('canvas');canvas.width=Math.round(picture.width*scale);canvas.height=Math.round(picture.height*scale);const context=canvas.getContext('2d');context.fillStyle='#fff';context.fillRect(0,0,canvas.width,canvas.height);context.drawImage(picture,0,0,canvas.width,canvas.height);settings.qr=canvas.toDataURL('image/jpeg',.9);URL.revokeObjectURL(url);wallet();toast('收款码已选好，点击保存设置后生效');};picture.onerror=()=>{URL.revokeObjectURL(url);toast('图片读取失败，请更换图片');};picture.src=url;});
-window.addEventListener('popstate',e=>{closeModal();route=e.state?.page?e.state:{page:'home'};render();});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)updateTimers();});
-if('serviceWorker' in navigator)window.addEventListener('load',()=>{const hadController=!!navigator.serviceWorker.controller;let reloaded=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(hadController&&!reloaded&&!cartCount()&&route.page==='home'){reloaded=true;location.reload();}});navigator.serviceWorker.register('./sw.js').catch(()=>{});});
+window.addEventListener('popstate',e=>{closeModal();route=e.state?.page?e.state:{page:'home'};render();enterMine();});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){updateTimers();enterMine();}});
+window.addEventListener('load',()=>updater.start());
+let updateResult=null;
+try { updateResult=JSON.parse(sessionStorage.getItem('slowbite.update.v1'));sessionStorage.removeItem('slowbite.update.v1'); } catch {}
+if(updateResult)route={page:'mine'};
 history.replaceState(route,'',location.pathname+location.search);
 render();setInterval(updateTimers,1000);
+if(updateResult){
+  if(updateResult.target===APP_RELEASE.id)toast(`已更新至 v${APP_RELEASE.version}`);
+  else toast('版本尚未切换成功，请重新检查更新');
+  enterMine();
+}

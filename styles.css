@@ -515,3 +515,20 @@ body[data-page=home] #app-main{padding-bottom:calc(var(--nav-height) + 48px + va
 .coupon-page-header strong{font-size:66px;line-height:76px}
 .simple-heading{padding-top:calc(12px + var(--safe-top))}
 .modal{max-height:calc(100dvh - var(--safe-top) - 12px)}
+
+.app-update-card{margin:0 10px 10px;padding:15px;background:#fff;border-radius:11px}
+.update-card-head{display:flex;align-items:center;gap:10px}
+.update-mark{display:flex;align-items:center;justify-content:center;background:#fff6ce;color:#af8423;width:36px;height:36px;border-radius:10px;flex-shrink:0}
+.update-mark .icon{width:20px;height:20px}
+.update-card-head h3{font-size:14px;font-weight:650;line-height:21px}
+.update-card-head p{font-size:10px;color:#999;line-height:17px}
+.update-card-head p b{font-weight:500;color:#777;overflow-wrap:anywhere}
+.new-version-dot{margin-left:auto;background:#fff1e6;color:#ee701d;font-size:9px;font-weight:700;padding:3px 5px;border-radius:4px}
+.update-status{font-size:11px;color:#888;line-height:18px;margin-top:10px;overflow-wrap:anywhere}
+.update-status.update-error{color:#ca7435}
+.update-buttons{display:flex;align-items:center;gap:14px;margin-top:11px}
+.update-buttons>.yellow-button,.update-buttons>.outline-button{font-size:12px;padding:9px 17px;min-height:36px}
+.update-buttons>.text-button{font-size:11px;color:#999;padding:8px 4px}
+.update-preserve{display:block;font-size:9px;color:#b1b1b1;line-height:16px;margin-top:9px}
+.is-checking .icon{animation:update-spin 1.2s linear infinite}
+@keyframes update-spin{to{transform:rotate(360deg)}}
