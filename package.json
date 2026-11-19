@@ -1,0 +1,10 @@
+{
+  "name": "slow-bite-pwa",
+  "version": "1.0.0",
+  "private": true,
+  "description": "一个帮助你在冲动外卖前留出冷静时间的个人 PWA。",
+  "scripts": {
+    "dev": "python3 -m http.server 4173",
+    "start": "python3 -m http.server 4173"
+  }
+}

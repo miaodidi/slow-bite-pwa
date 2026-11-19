@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f6f2ea" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="慢点再吃" />
+  <meta name="description" content="给冲动外卖留一段冷静时间。" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <title>慢点再吃</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">PERSONAL FOOD PAUSE</p>
+        <h1>慢点再吃<span class="brand-dot">·</span></h1>
+      </div>
+      <button class="icon-btn" data-action="open-settings" aria-label="打开设置">⚙</button>
+    </header>
+
+    <main id="app-main">
+      <section class="hero-card">
+        <div class="hero-copy">
+          <span class="status-pill"><span class="pulse"></span>今晚给自己一点时间</span>
+          <h2>馋意会变，<br /><em>决定可以慢一点。</em></h2>
+          <p>先模拟下单，再等一会儿。冷静期结束后，你仍然可以选择真正想吃的东西。</p>
+          <button class="primary-btn" data-action="scroll-menu">开始选餐 <span>↗</span></button>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="sun-orb"></div>
+          <div class="bowl-shadow"></div>
+          <div class="bowl"><span class="bowl-rice">✦</span><span class="bowl-steam steam-one">⌁</span><span class="bowl-steam steam-two">⌁</span></div>
+          <div class="leaf leaf-one">✦</div><div class="leaf leaf-two">✧</div>
+        </div>
+      </section>
+
+      <section class="section-head" id="menu-section">
+        <div><p class="eyebrow">TONIGHT'S SHORTLIST</p><h2>想吃什么？</h2></div>
+        <button class="text-btn" data-action="show-all">看全部 <span>→</span></button>
+      </section>
+      <div class="filter-row" id="category-filters"></div>
+      <section class="food-grid" id="food-grid" aria-live="polite"></section>
+
+      <section class="active-order-wrap" id="active-order-wrap" hidden></section>
+      <section class="mini-note">
+        <span class="note-icon">◒</span>
+        <div><strong>小提醒</strong><p>模拟订单不会扣钱，也不会通知真实商家。你可以放心把“想吃”放在这里。</p></div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="主导航">
+      <button class="nav-item active" data-action="nav-home"><span>⌂</span><small>首页</small></button>
+      <button class="nav-item" data-action="open-orders"><span>▱</span><small>订单</small><b id="order-badge" hidden>0</b></button>
+      <button class="nav-item" data-action="open-wallet"><span>◎</span><small>冷静金</small></button>
+    </nav>
+  </div>
+
+  <div class="modal-backdrop" id="modal-backdrop" hidden>
+    <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"></div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js" defer></script>
+</body>
+</html>
