@@ -10,10 +10,8 @@
   <meta name="description" content="给冲动外卖留一段冷静时间。" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
   <title>慢点再吃</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -48,6 +46,7 @@
       </section>
       <div class="filter-row" id="category-filters"></div>
       <section class="food-grid" id="food-grid" aria-live="polite"></section>
+      <button class="primary-btn full cart-summary" id="cart-summary" data-action="open-cart" hidden></button>
 
       <section class="active-order-wrap" id="active-order-wrap" hidden></section>
       <section class="mini-note">
