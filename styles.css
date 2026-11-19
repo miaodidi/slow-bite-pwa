@@ -516,4 +516,3 @@ body[data-page=home] #app-main{padding-bottom:calc(115px + var(--safe-bottom))}
 
 
 .form input:not([type=radio]):not([type=file]),.search-form input,textarea{font-size:16px}
-

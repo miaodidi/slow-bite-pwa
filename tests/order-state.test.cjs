@@ -59,7 +59,7 @@ test('cart is restored on reload and all offline catalog images exist in the cac
  const saved={};let run=fixture(saved);run("route={page:'shop',id:'burger'};addProduct('beef');checkoutDraft.remark='少酱';saveCart()");
  run=fixture(saved);assert.equal(run('cartCount()'),1);assert.equal(run('totalCart()'),26);assert.equal(run('checkoutDraft.remark'),'少酱');
  const sw=fs.readFileSync('sw.js','utf8');const assets=JSON.parse(sw.match(/const ASSETS = (\[.*?\]);/)[1]);
- for(const asset of assets)assert.ok(fs.existsSync(asset),asset+' must exist');
+ for(const asset of assets)assert.ok(fs.existsSync(asset.split('?')[0]),asset+' must exist');
  const images=JSON.parse(run('JSON.stringify([...SHOPS.flatMap(s=>[s.image,...s.menu.map(p=>p.image)]),...CATEGORIES.map(c=>"cat-"+c[1])])'));
  for(const image of images)assert.ok(assets.includes('./assets/'+image+'.webp'),image+' must be cached');
  assert.ok(assets.includes('./catalog.js'));
