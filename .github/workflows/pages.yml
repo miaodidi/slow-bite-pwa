@@ -28,8 +28,8 @@ jobs:
       - name: Prepare static site
         run: |
           mkdir -p dist
-          cp index.html app.js styles.css sw.js manifest.webmanifest icon.svg dist/
-          cp -R icons dist/
+          cp index.html app.js catalog.js styles.css sw.js manifest.webmanifest icon.svg dist/
+          cp -R icons assets dist/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

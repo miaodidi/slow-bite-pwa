@@ -1,11 +1,11 @@
 {
-  "name": "慢点再吃 · Slow Bite",
-  "short_name": "慢点再吃",
+  "name": "慢点外卖 · Slow Bite",
+  "short_name": "慢点外卖",
   "description": "给冲动外卖留一段冷静时间。",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#f6f2ea",
-  "theme_color": "#f6f2ea",
+  "background_color": "#ffe23b",
+  "theme_color": "#ffe23b",
   "lang": "zh-CN",
   "icons": [
     {
