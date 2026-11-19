@@ -54,9 +54,20 @@ function renderNav() {
   $('#bottom-nav').innerHTML=[['home','外卖','home'],['coupons','神券','ticket'],['orders','订单','order'],['mine','我的','user']].map(([page,label,i])=>`<button class="nav-item ${p===page?'active':''}" data-action="nav" data-page="${page}"><span class="nav-symbol">${page==='home'&&p==='home'?'<b>外卖</b>':icon(i)}${page==='coupons'?'<em>神</em>':''}</span><small>${label}</small>${page==='orders'&&count?`<sup>${count}</sup>`:''}</button>`).join('');
   $('#floating-ui').innerHTML=p==='home'?`${couponBanner?`<div class="coupon-banner"><i>神券</i><span>你有一张<b>13元</b>神券未使用</span><button data-action="nav" data-page="coupons">去查看</button><button class="banner-close" data-action="hide-banner" aria-label="关闭优惠提示">×</button></div>`:''}<button class="floating-cart" data-action="floating-cart" aria-label="购物车">${icon('cart')}${cartCount()?`<b>${cartCount()}</b>`:''}</button>`:'';
 }
+function pageChromeColor() {
+  if (['home', 'mine', 'coupons'].includes(route.page)) return '#ffe23b';
+  if (route.page === 'shop') {
+    return {heytea:'#e6e7bd',luckin:'#142b60',pancake:'#c75226',noodles:'#c75226',burger:'#b23822',fruit:'#08663e',qixian:'#08663e',tea:'#ead9c5',mumou:'#ead9c5',maiji:'#ead9c5'}[route.id] || '#d9e7cf';
+  }
+  return route.page === 'list' ? '#f5f5f6' : '#ffffff';
+}
 function render() {
   document.body.dataset.page=route.page;
-  document.querySelector('meta[name="theme-color"]').content=['home','mine','coupons'].includes(route.page)?'#ffe23b':'#f5f5f5';
+  // The root canvas is also used by iOS for the status bar and overscroll.
+  // Keep it synchronized with the visible page, including installed older web clips.
+  const chromeColor = pageChromeColor();
+  document.querySelector('meta[name="theme-color"]').content = chromeColor;
+  document.documentElement.style.setProperty('--chrome-color', chromeColor);
   const views={home:renderHome,list:renderList,search:renderSearch,shop:renderShop,checkout:renderCheckout,orders:renderOrders,detail:renderDetail,coupons:renderCoupons,mine:renderMine};
   $('#app-main').innerHTML=(views[route.page]||renderHome)();renderNav();lastListStates=orders.map(o=>o.id+statusLabel(o)).join('|');
 }

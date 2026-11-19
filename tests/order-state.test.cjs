@@ -11,7 +11,7 @@ function fixture(saved={}) {
   };
   const context = vm.createContext({
     localStorage:{getItem(k){return saved[k]||null;},setItem(k,v){saved[k]=v;}},
-    document:{querySelector:element,querySelectorAll(){return [];},addEventListener(){},body:{dataset:{},classList:{add(){},remove(){}}}},
+    document:{documentElement:{style:{setProperty(){}}},querySelector:element,querySelectorAll(){return [];},addEventListener(){},body:{dataset:{},classList:{add(){},remove(){}}}},
     navigator:{},window:{addEventListener(){},scrollTo(){}},history:{replaceState(){},pushState(){}},location:{pathname:'/',search:''},setInterval(){},setTimeout(){},clearTimeout(){},Intl,Date:class extends Date {}
   });
   vm.runInContext(source,context);

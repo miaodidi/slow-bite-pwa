@@ -1,6 +1,10 @@
-:root{--yellow:#ffdf28;--red:#ff3824;--orange:#ff7900;--ink:#222;--muted:#999;--bg:#f5f5f6;--safe-bottom:env(safe-area-inset-bottom,0px);--safe-top:env(safe-area-inset-top,0px);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",Arial,sans-serif;color:var(--ink);font-synthesis:none;-webkit-font-smoothing:antialiased}
+:root{--app-width:402px;--chrome-color:#ffe23b;--nav-height:55px;--yellow:#ffdf28;--red:#ff3824;--orange:#ff7900;--ink:#222;--muted:#999;--bg:#f5f5f6;--safe-bottom:env(safe-area-inset-bottom,0px);--safe-top:env(safe-area-inset-top,0px);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",Arial,sans-serif;color:var(--ink);font-synthesis:none;-webkit-font-smoothing:antialiased}
 *{box-sizing:border-box}
-body{margin:0;background:#e9eaec;font-size:14px}
+html{min-height:100%;background:var(--chrome-color);color-scheme:light;-webkit-text-size-adjust:100%;text-size-adjust:100%;scrollbar-width:none}
+body{margin:0;min-height:100dvh;background:var(--chrome-color);font-size:14px;overscroll-behavior-y:none;scrollbar-width:none}
+html::-webkit-scrollbar,body::-webkit-scrollbar{display:none}
+/* The OS draws the time and battery. This only paints behind its safe area. */
+body:before{content:'';position:fixed;top:0;left:0;right:0;height:var(--safe-top);background:var(--chrome-color);pointer-events:none;z-index:45}
 button,input,textarea{font:inherit}
 button,a{-webkit-tap-highlight-color:transparent}
 button{border:0;background:none;color:inherit;padding:0;cursor:pointer}
@@ -16,9 +20,9 @@ button svg{vertical-align:middle}
 .icon{width:24px;height:24px;display:inline-block;flex-shrink:0}
 button{touch-action:manipulation}
 [hidden]{display:none!important}
-.app-shell{max-width:480px;min-height:100dvh;margin:auto;background:var(--bg);position:relative;overflow:clip}
-#app-main{min-height:100dvh;padding-bottom:calc(88px + var(--safe-bottom))}
-.home-header{background:linear-gradient(105deg,#ffe95b,#ffdf20);padding:calc(12px + var(--safe-top)) 12px 10px}
+.app-shell{max-width:var(--app-width);min-height:100dvh;margin:auto;background:var(--bg);position:relative}
+#app-main{min-height:100dvh;padding-bottom:calc(var(--nav-height) + 14px + var(--safe-bottom))}
+.home-header{background:var(--yellow-header,#ffe23b);padding:calc(12px + var(--safe-top)) 12px 10px}
 .home-top{height:43px;display:flex;align-items:center;justify-content:space-between;position:relative;margin-bottom:13px}
 .home-brand{display:flex;align-items:center;font-size:21px;gap:4px}
 .home-brand .icon{width:20px;height:26px;stroke-width:2.6}
@@ -100,26 +104,26 @@ button{touch-action:manipulation}
 .shop-tags{display:flex;gap:5px;margin-top:5px}
 .shop-tags span{font-size:9px;color:#a0703b;border:1px solid #eddfcd;border-radius:3px;padding:0 3px;line-height:14px}
 .list-end{text-align:center;color:#bbb;font-size:11px;padding:22px 10px 35px}
-.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;display:flex;justify-content:space-around;height:calc(67px + var(--safe-bottom));padding:5px 0 calc(7px + var(--safe-bottom));z-index:30;box-shadow:0 -1px 0 #f0f0f0}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:var(--app-width);background:#fff;display:flex;justify-content:space-around;height:calc(var(--nav-height) + var(--safe-bottom));padding:4px 0 calc(4px + var(--safe-bottom));z-index:30;box-shadow:0 -1px 0 #f0f0f0}
 .nav-item{width:25%;display:flex;align-items:center;flex-direction:column;color:#666;position:relative;gap:1px}
-.nav-symbol{display:flex;position:relative;align-items:center;justify-content:center;width:35px;height:34px}
-.nav-symbol>.icon{width:28px;height:28px;stroke-width:2.1}
+.nav-symbol{display:flex;position:relative;align-items:center;justify-content:center;width:32px;height:29px}
+.nav-symbol>.icon{width:25px;height:25px;stroke-width:2.1}
 .nav-item small{font-size:12px;font-weight:500}
 .nav-symbol>em{position:absolute;top:6px;font-size:16px;font-weight:800;font-style:italic;background:#fff;line-height:20px}
 .nav-item.active{color:#171717}
 .nav-item.active .nav-symbol{color:#292300}
-.nav-item:first-child.active .nav-symbol{border-radius:50%;width:43px;height:43px;background:#ffe439;font-size:15px;margin-top:2px}
+.nav-item:first-child.active .nav-symbol{border-radius:50%;width:41px;height:41px;background:#ffe439;font-size:15px;margin-top:2px}
 .nav-item:first-child.active small{display:none}
 .nav-item.active:not(:first-child) .nav-symbol{background:#ffe348;border-radius:10px}
 .nav-item.active .nav-symbol>em{background:#ffe348}
 .nav-item sup{position:absolute;left:56%;top:-1px;background:#ff4b3a;color:#fff;border-radius:10px;font-size:9px;padding:1px 4px}
-.coupon-banner{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(67px + var(--safe-bottom));max-width:480px;width:100%;display:flex;align-items:center;padding:8px 10px;gap:7px;background:#fff2f3;height:41px;z-index:29}
+.coupon-banner{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--nav-height) + var(--safe-bottom));max-width:var(--app-width);width:100%;display:flex;align-items:center;padding:8px 10px;gap:7px;background:#fff2f3;height:38px;z-index:29}
 .coupon-banner>i{font-style:italic;font-size:11px;color:#fff;background:#ff432a;border-radius:4px;padding:1px 3px;font-weight:700;white-space:nowrap}
 .coupon-banner>span{font-size:12px;white-space:nowrap;flex:1}
 .coupon-banner b{color:#ff4429}
 .coupon-banner button{background:#ff511f;color:#fff;border-radius:20px;padding:4px 12px;font-size:12px;white-space:nowrap}
 .coupon-banner .banner-close{background:none;color:#aaa;padding:0;font-size:22px;line-height:20px;margin-left:3px}
-.floating-cart{position:fixed;bottom:calc(126px + var(--safe-bottom));left:calc(50% + min(50vw,240px) - 59px);width:48px;height:48px;border:1px solid #f3f3f3;border-radius:50%;background:#fff;box-shadow:0 2px 9px #0002;z-index:28;display:flex;align-items:center;justify-content:center}
+.floating-cart{position:fixed;bottom:calc(var(--nav-height) + 57px + var(--safe-bottom));left:calc(50% + min(50vw,201px) - 59px);width:48px;height:48px;border:1px solid #f3f3f3;border-radius:50%;background:#fff;box-shadow:0 2px 9px #0002;z-index:28;display:flex;align-items:center;justify-content:center}
 .floating-cart .icon{width:28px;height:28px;color:#555}
 .floating-cart>b{position:absolute;top:0;right:0;background:#ff4433;color:white;font-size:10px;border-radius:20px;padding:2px 5px}
 .active-order-strip{display:flex;align-items:center;gap:8px;margin:0 8px 8px;padding:11px 10px;background:#fff7cc;border-radius:10px;width:calc(100% - 16px);font-size:11px}
@@ -174,7 +178,7 @@ button{touch-action:manipulation}
 .store-voucher{display:flex;align-items:center;width:100%;gap:8px;background:#fff0ee;border-radius:5px;padding:7px 8px;color:#ff392d;margin-top:10px;font-size:12px}
 .store-voucher>b{font-style:italic;font-weight:800}
 .store-voucher>em{font-style:normal;margin-left:auto;font-size:10px;background:#ff4d36;color:#fff;border-radius:10px;padding:2px 9px}
-.store-tabs{display:flex;background:white;align-items:center;padding:0 14px;gap:28px;position:sticky;top:0;z-index:12;height:46px;border-bottom:1px solid #f4f4f4}
+.store-tabs{display:flex;background:white;align-items:center;padding:0 14px;gap:28px;position:sticky;top:var(--safe-top);z-index:12;height:46px;border-bottom:1px solid #f4f4f4}
 .store-tabs button{height:46px;position:relative;font-size:15px;font-weight:600}
 .store-tabs button.selected:after{position:absolute;bottom:0;content:'';height:4px;width:23px;background:#ffd626;border-radius:5px;left:50%;transform:translateX(-50%)}
 .store-tabs small{font-size:9px;color:#999;margin-left:2px;font-weight:400}
@@ -205,7 +209,7 @@ button{touch-action:manipulation}
 .spec-button{margin-left:auto;white-space:nowrap;background:#ffd733;border-radius:13px;font-size:10px;padding:4px 8px;position:relative}
 .spec-button sup{position:absolute;background:#f74832;color:white;font-size:9px;border-radius:10px;top:-6px;right:0;min-width:12px}
 .menu-end{font-size:10px;color:#bcbcbc;text-align:center;padding:15px}
-.store-cart{position:fixed;bottom:calc(10px + var(--safe-bottom));width:calc(100% - 24px);max-width:456px;left:50%;transform:translateX(-50%);background:#333;z-index:25;border-radius:30px;display:flex;align-items:center;height:50px;color:#fff;padding-left:72px;box-shadow:0 4px 12px #0001}
+.store-cart{position:fixed;bottom:calc(10px + var(--safe-bottom));width:calc(100% - 24px);max-width:calc(var(--app-width) - 24px);left:50%;transform:translateX(-50%);background:#333;z-index:25;border-radius:30px;display:flex;align-items:center;height:50px;color:#fff;padding-left:72px;box-shadow:0 4px 12px #0001}
 .cart-ball{position:absolute;left:9px;top:-9px;width:56px;height:56px;border:5px solid #444;background:#555;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#999}
 .cart-ball.filled{background:#ffd733;color:#333}
 .cart-ball .icon{width:29px;height:29px}
@@ -259,7 +263,7 @@ button{touch-action:manipulation}
 .bill-row b{font-weight:500}
 .bill-total{border-top:1px solid #f5f5f5;text-align:right;padding-top:14px;margin-top:7px;font-size:12px}
 .bill-total strong{font-size:21px;margin-left:5px}
-.checkout-footer{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:10px 16px calc(10px + var(--safe-bottom));z-index:22;box-shadow:0 -1px 6px #00000004}
+.checkout-footer{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:var(--app-width);background:#fff;display:flex;justify-content:space-between;align-items:center;padding:10px 16px calc(10px + var(--safe-bottom));z-index:22;box-shadow:0 -1px 6px #00000004}
 .checkout-footer>div{font-size:12px}
 .checkout-footer strong{font-size:24px;font-weight:700;margin-left:5px}
 .checkout-footer small{display:block;font-size:10px;color:#f64b2f;margin-top:2px}
@@ -322,7 +326,7 @@ button{touch-action:manipulation}
 .order-info p{flex:1;word-break:break-word}
 .row-link{color:#bc8200;font-size:12px;padding:12px 0 0}
 .delivered-check{color:#af8514!important;font-size:12px!important}
-.coupon-page-header{background:linear-gradient(140deg,#ffea6a,#ffce36);padding:calc(27px + var(--safe-top)) 22px 23px}
+.coupon-page-header{background:#ffe23b;padding:calc(27px + var(--safe-top)) 22px 23px}
 .coupon-page-header h1{font-size:25px}
 .coupon-page-header>p{font-size:12px;color:#9b7510;margin-top:7px}
 .coupon-page-header>div{display:flex;align-items:center;gap:25px;margin:20px 3px 0}
@@ -342,7 +346,7 @@ button{touch-action:manipulation}
 .coupon-card p{font-size:10px;color:#999;margin-bottom:4px}
 .coupon-card section small{font-size:9px;color:#bbb}
 .coupon-card>button{background:#ff4933;color:#fff;border-radius:20px;padding:7px 10px;font-size:11px;white-space:nowrap}
-.mine-header{padding:calc(21px + var(--safe-top)) 18px 30px;background:linear-gradient(130deg,#ffea6d,#ffdd2b)}
+.mine-header{padding:calc(21px + var(--safe-top)) 18px 30px;background:#ffe23b}
 .mine-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}
 .mine-title h1{font-size:25px}
 .profile{display:flex;align-items:center;gap:11px}
@@ -381,7 +385,7 @@ button{touch-action:manipulation}
 .two-buttons>*{flex:1;text-align:center}
 .modal-open{overflow:hidden}
 .modal-backdrop{position:fixed;inset:0;background:#0006;z-index:60;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(1px)}
-.modal{width:100%;max-width:480px;max-height:88dvh;overflow:auto;overscroll-behavior:contain;background:#fff;border-radius:19px 19px 0 0;padding:18px 18px calc(24px + var(--safe-bottom));box-shadow:0 -10px 45px #0001;animation:sheet-up .18s ease-out}
+.modal{width:100%;max-width:var(--app-width);max-height:88dvh;overflow:auto;overscroll-behavior:contain;background:#fff;border-radius:19px 19px 0 0;padding:18px 18px calc(24px + var(--safe-bottom));box-shadow:0 -10px 45px #0001;animation:sheet-up .18s ease-out}
 .modal-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:20px}
 .modal-head h2{font-size:19px;font-weight:700}
 .modal-head .icon-button{color:#aaa;width:26px;height:26px}
@@ -448,39 +452,9 @@ textarea{width:100%;min-height:115px;resize:vertical;padding:12px;border:1px sol
 to{transform:translateY(0);opacity:1}
 }
 body[data-page=shop] #app-main{padding-bottom:calc(85px + var(--safe-bottom))}
-body[data-page=list] #app-main,body[data-page=detail] #app-main,body[data-page=search] #app-main{padding-bottom:25px}
-body[data-page=home] #app-main{padding-bottom:calc(115px + var(--safe-bottom))}
-@media(min-width:600px){.app-shell{box-shadow:0 0 50px #0000000d}
-.modal-backdrop{align-items:center}
-.modal{border-radius:20px;max-height:85vh}
-}
-@media(max-width:374px){.shop-cover{width:88px;height:88px}
-.shop-title h3{font-size:15px}
-.shop-delivery{font-size:9px}
-.promo-product>img{width:52px;height:59px}
-.promo-card{padding:8px}
-.promo-card h2{font-size:17px;gap:4px}
-.promo-card h2 small{font-size:10px}
-.promo-copy>b{font-size:12px}
-.promo-copy>span{font-size:10px}
-.promo-copy strong>em{font-size:8px}
-.promo-copy>strong{font-size:19px}
-.merchant-tabs{gap:16px}
-.merchant-tabs button{font-size:18px}
-.category>img{width:56px}
-.category>span{font-size:12px}
-.express-banner{gap:5px}
-.express-banner>b{font-size:14px}
-.express-banner>span{font-size:11px}
-.express-banner strong{font-size:12px}
-.product-photo{width:70px;height:80px}
-.product-info h3{font-size:13px}
-.product-price>del{display:none}
-.store-tabs{gap:20px}
-}
-
-
-/* Match the compact reference layout, leaving the native iOS status area to safe-area. */
+body[data-page=list] #app-main,body[data-page=detail] #app-main,body[data-page=search] #app-main{padding-bottom:calc(25px + var(--safe-bottom))}
+body[data-page=home] #app-main{padding-bottom:calc(var(--nav-height) + 48px + var(--safe-bottom))}
+/* iPhone portrait layout: one safe-area inset, then the compact app header. */
 .home-header{padding-top:calc(2px + var(--safe-top));padding-bottom:7px}
 .home-top{height:34px;margin-bottom:7px}
 .home-tabs{gap:26px}
@@ -504,11 +478,11 @@ body[data-page=home] #app-main{padding-bottom:calc(115px + var(--safe-bottom))}
 .home-merchants .shop-coupons{font-size:12px}
 .home-merchants .shop-ranking>span{font-size:11px}
 
-.menu-group{scroll-margin-top:60px}
+.menu-group{scroll-margin-top:calc(60px + var(--safe-top))}
 .menu-group>h2{font-size:13px;margin:15px 0 13px}
 .menu-categories{align-self:stretch}
 .menu-categories button{position:relative}
-.menu-categories{position:sticky;top:46px;height:max-content;min-height:440px}
+.menu-categories{position:sticky;top:calc(46px + var(--safe-top));height:max-content;min-height:440px}
 
 
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}
@@ -516,3 +490,28 @@ body[data-page=home] #app-main{padding-bottom:calc(115px + var(--safe-bottom))}
 
 
 .form input:not([type=radio]):not([type=file]),.search-form input,textarea{font-size:16px}
+
+/* Tuned against the user's 1206 × 2622 screenshot (402 × 874 CSS px at 3×). */
+.home-top{height:32px;margin-bottom:5px}
+.category-panel{padding-top:8px}
+.announcement{height:24px;margin-bottom:8px}
+.category-grid{row-gap:8px}
+.category>img{height:49px}
+.category.small-category>img{height:31px}
+.promo-card{padding:8px}
+.promo-card h2{font-size:18px;line-height:23px}
+.promo-card h2 small{font-size:11px}
+.promo-product{margin-top:7px}
+.promo-product>img{width:58px;height:58px}
+.promo-copy>b{font-size:13px;line-height:19px}
+.promo-copy>span{line-height:17px}
+.promo-copy>strong{font-size:21px;line-height:22px}
+.promo-copy strong>em{font-size:9px}
+.mine-header{padding-top:calc(12px + var(--safe-top));padding-bottom:24px}
+.mine-title{margin-bottom:19px}
+.mine-title h1,.coupon-page-header h1{font-size:23px}
+.coupon-page-header{padding-top:calc(14px + var(--safe-top));padding-bottom:19px}
+.coupon-page-header>div{margin-top:15px}
+.coupon-page-header strong{font-size:66px;line-height:76px}
+.simple-heading{padding-top:calc(12px + var(--safe-top))}
+.modal{max-height:calc(100dvh - var(--safe-top) - 12px)}
